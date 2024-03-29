@@ -1,15 +1,26 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import "./App.css";
+import { useRef } from "react";
 
 const Cube = (props) => {
+  // Here useRef is use to give reference of mesh
+  const meshRef = useRef();
+
+  // UseFrame is use to animate the objects , you can understand it as frames or also can see as roll of old cameras
+  // state refers to the state of object and delta is time difference between 2 frames
+  useFrame((state, delta) => {
+    // It Rotates the Cube in x
+    meshRef.current.rotation.x += delta;
+    // It Rotates the cube in y into 2.0
+    meshRef.current.rotation.y += delta * 2.0;
+    // Here we move the postion of the cube here we move it in z and we use logic of the sin here as sin is moving in between -1 to 1 so it move cube to backward and forward
+    // And here understand that delta is very small value as it is difference of the frames
+    meshRef.current.position.z = Math.sin(state.clock.elapsedTime);
+  });
+
   return (
-    <mesh position={props.position}>
-      {/* Here boxGeometry is a 3rd Box in this mesh */}
-      {/* args can set size of the shap */}
-      {/* <boxGeometry args={[2, 2, 2]} /> */}
+    <mesh position={props.position} ref={meshRef}>
       <boxGeometry args={props.size} />
-      {/* Now to give it color you have to use metrial */}
-      {/* without lighting the meshStandardMatrial will be default visible as black color as lighting is not activted */}
       <meshStandardMaterial color={props.color} />
     </mesh>
   );
@@ -18,19 +29,10 @@ const Cube = (props) => {
 function App() {
   return (
     <>
-      {/* So in R3F you can say in our theater the <Canvas> is our stage on that we will perform our every operations */}
       <Canvas>
-        {/* Here mesh a platform a perticular platform where our shape can be render */}
-        {/* Now the lighting is must for see the actual matrial of shap in mesh  */}
         <directionalLight position={[0, 0, 2]} />
-        {/* <directionalLight position={[0, 0, 2]} intensity={0.1} /> */}
-        {/* AmibientLight is another type of light, in Light we can set intensity as shown below */}
-        {/* <ambientLight intensity={0.1} />
-        <ambientLight /> */}
-        {/* You can give position to mesh also! */}
-        {/* group can use to move and group many meshes */}
+
         <group>
-          {/* <group position={[0, -1, 0]}> */}
           <Cube position={[1, 1, 0]} size={[1, 1, 1]} color={"red"} />
           <Cube position={[-1, 1, 0]} size={[1, 1, 1]} color={"blue"} />
           <Cube position={[1, -1, 0]} size={[1, 1, 1]} color={"green"} />
